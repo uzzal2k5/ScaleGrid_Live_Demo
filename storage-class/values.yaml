@@ -1,0 +1,8 @@
+storageClass:
+  name: scalegrid-ebs-sc
+  type: gp3
+  fsType: ext4
+  encrypted: "true"
+  reclaimPolicy: Retain
+  volumeBindingMode: WaitForFirstConsumer
+  allowVolumeExpansion: true

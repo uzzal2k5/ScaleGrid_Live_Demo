@@ -1,0 +1,5 @@
+secret:
+  name: postgresql-secrets
+  namespace: database
+  postgresPassword: "postgresqlpass"
+  replicationPassword: "replicationpass"

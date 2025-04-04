@@ -1,0 +1,22 @@
+postgresql:
+  auth:
+    existingSecret: postgresql-secrets
+    username: "postgres"
+    passwordKey: "postgres-password"
+    replicationUser: "repl_user"
+    replicationPasswordKey: "replication-password"
+
+persistence:
+  enabled: true
+  size: 50Gi
+  storageClass: "scalegrid-ebs-sc"
+
+primary:
+  service:
+    type: ClusterIP
+  postgresqlConfiguration:
+    hot_standby: "on"
+    primary_conninfo: "host=pg-cluster-postgresql-ha-postgresql-EKS1.<region1>.svc.cluster.local user=repl_user password={{ .Values.postgresql.auth.replicationPasswordKey }}"
+
+readReplicas:
+  replicaCount: 2
