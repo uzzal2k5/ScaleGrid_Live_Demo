@@ -13,10 +13,19 @@ persistence:
 
 primary:
   service:
+    name: eks2-postgresql
     type: ClusterIP
+    port: 5432
   postgresqlConfiguration:
     hot_standby: "on"
     primary_conninfo: "host=pg-cluster-postgresql-ha-postgresql-EKS1.<region1>.svc.cluster.local user=repl_user password={{ .Values.postgresql.auth.replicationPasswordKey }}"
 
+  replication:
+    enabled: true
+    replicaCount: 2
+    synchronous: true
+    replicationUser: repl_user
+    replicationPassword: replicationpass
 readReplicas:
   replicaCount: 2
+

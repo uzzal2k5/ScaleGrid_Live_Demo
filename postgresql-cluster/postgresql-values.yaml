@@ -1,28 +1,3 @@
-replicaCount: 1
-global:
-  storageClass: "scalegrid-ebs-sc"
-  postgresql:
-    auth:
-      existingSecret: postgresql-secrets
-      username: "postgres"
-      passwordKey: "postgres-password"
-      replicationUser: "repl_user"
-      replicationPasswordKey: "replication-password"
-persistence:
-  enabled: true
-  storageClass: "scalegrid-ebs-sc"
-  size: 10Gi
-
-primary:
-  service:
-    type: ClusterIP
-  postgresqlConfiguration:
-    wal_level: "replica"
-    archive_mode: "on"
-    archive_command: "cp %p /bitnami/postgresql/wal_archive/%f"
-    max_wal_senders: "10"
-    hot_standby: "on"
----
 postgresql:
   auth:
     existingSecret: postgresql-secrets
@@ -38,7 +13,9 @@ persistence:
 
 primary:
   service:
+    name: eks1-postgresql
     type: ClusterIP
+    port: 5432
   postgresqlConfiguration:
     wal_level: "replica"
     archive_mode: "on"
