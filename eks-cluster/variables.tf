@@ -1,7 +1,7 @@
 variable "project" {
   description = "Project"
   type        = string
-  default     = "EKS"
+  default     = "eks"
 }
 
 variable "regions" {
@@ -13,14 +13,12 @@ variable "vpc_cidr_blocks" {
   description = "VPC CIDR blocks for each region"
   type = map(string)
   default = {
-    vpc_1 = "10.0.0.0/16"
-    vpc_2 = "10.10.0.0/16"
+    vpc_1 = "10.10.0.0/16"
+    vpc_2 = "10.20.0.0/16"
   }
 }
 
-variable "cluster_count" {
-  description = "cluster count"
-  type        = number
-  default     = 2
-}
+# Route Table vpc1 , vpc2
+variable "vpc1_route_table_id" {}
+variable "vpc2_route_table_id" {}
 

@@ -19,6 +19,7 @@ module "eks_1" {
   vpc_id     = module.vpc_1.vpc_id
   subnet_ids = module.vpc_1.private_subnets
 
+
   eks_managed_node_group_defaults = {
     ami_type = "AL2_x86_64"
 
