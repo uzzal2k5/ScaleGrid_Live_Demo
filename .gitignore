@@ -1,0 +1,10 @@
+# Ignore Terraform lock file and working directory in eks-cluster
+*/.terraform
+*/.terraform/
+eks-cluster/.terraform.lock.hcl
+
+# Optional: Ignore any Terraform state files if you store them locally
+*/terraform.tfstate
+*/terraform.tfstate.backup
+*/crash.log
+*/*.tfstate*
