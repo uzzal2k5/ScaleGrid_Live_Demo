@@ -64,7 +64,7 @@ output "eks_1_subnets" {
   value       = module.vpc_1.private_subnets
 }
 
-# Outputs for EKS Cluster 2
+# ✅ Outputs for EKS Cluster 2
 
 output "eks_2_cluster_name" {
   description = "The name of the second EKS cluster"
@@ -107,3 +107,46 @@ output "eks_2_ebs_csi_role_arn" {
   value       = module.irsa-ebs-csi-region2.iam_role_arn
 }
 
+
+# VPC peering
+output "vpc_peering_connection_id" {
+  description = "The ID of the VPC peering connection"
+  value       = aws_vpc_peering_connection.peer.id
+}
+
+output "vpc_peering_connection_status" {
+  description = "The status of the VPC peering connection"
+  value       = aws_vpc_peering_connection.peer.accept_status
+}
+
+output "vpc1_to_vpc2_route_id" {
+  description = "Route ID from VPC1 to VPC2"
+  value       = aws_route.route_vpc1_to_vpc2.id
+}
+
+output "vpc2_to_vpc1_route_id" {
+  description = "Route ID from VPC2 to VPC1"
+  value       = aws_route.route_vpc2_to_vpc1.id
+}
+
+output "peer_accepter_status" {
+  description = "Status of the peer accepter"
+  value       = aws_vpc_peering_connection_accepter.peer_accept.accept_status
+}
+
+
+output "vpc_peering_info" {
+  description = "Complete info of the peering connection"
+  value = {
+    id     = aws_vpc_peering_connection.peer.id
+    status = aws_vpc_peering_connection.peer.requester
+    peer_owner_id = aws_vpc_peering_connection.peer.peer_owner_id
+    peer_region   = aws_vpc_peering_connection.peer.peer_region
+  }
+}
+
+
+output "eks_node_sg_id" {
+  description = "Node Security Group ID"
+  value = module.eks_1.node_security_group_id
+}
