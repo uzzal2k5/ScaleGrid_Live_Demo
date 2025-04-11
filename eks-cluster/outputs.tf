@@ -11,6 +11,17 @@ output "vpc1_private_subnets" {
 output "vpc1_public_subnets" {
   value = module.vpc_1.public_subnets  # ✅ Access directly if it's a single module
 }
+
+output "vpc_1_public_route_table_ids" {
+  description = "Public route table id"
+  value = module.vpc_1.public_route_table_ids
+}
+
+output "vpc_1_private_route_table_ids" {
+  description = "Private route table id"
+  value = module.vpc_1.private_route_table_ids
+}
+
 # VPC2 OUTPUT
 output "vpc2_ids" {
   description = "VPC IDs for each region"
@@ -24,6 +35,17 @@ output "vpc2_private_subnets" {
 output "vpc2_public_subnets" {
   value = module.vpc_2.public_subnets  # ✅ Access directly if it's a single module
 }
+
+output "vpc_2_public_route_table_ids" {
+  description = "Public route table id"
+  value = module.vpc_2.public_route_table_ids
+}
+
+output "vpc_2_private_route_table_ids" {
+  description = "Private route table id"
+  value = module.vpc_2.private_route_table_ids
+}
+
 # Security Group
 output "eks_sg_1_id" {
   value = aws_security_group.eks_sg_1.id
