@@ -56,22 +56,24 @@ This Makefile will automate the following tasks:
 
     ```make deploy```
 
-8. Deploy CoreDNS to both EKS clusters:
+9. Deploy CoreDNS to both EKS clusters:
 
     ```make coredns```
 
-8. Deploy PostgreSQL publication job to Cluster 1:
+10. Deploy PostgreSQL publication job to Cluster 1:
 
     ```make publication-job```
 
-9. Cleanup Kubernetes Resources:
+11. Cleanup Kubernetes Resources:
 
   ```make clean-k8s```
 
-10. Cleanup Terraform State:
+12. Cleanup Terraform State:
+
     ```make clean-terraform```
 
-10. Clean Up All
+13. Clean Up All
+
     ```make clean```
 
 ## Why Use This Makefile?
