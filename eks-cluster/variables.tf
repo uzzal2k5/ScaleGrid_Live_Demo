@@ -18,7 +18,11 @@ variable "vpc_cidr_blocks" {
   }
 }
 
-# Route Table vpc1 , vpc2
-variable "vpc1_route_table_id" {}
-variable "vpc2_route_table_id" {}
+# # Route Table vpc1 , vpc2
+# variable "vpc1_route_table_id" {
+#
+# }
+# variable "vpc2_route_table_id" {
+#
+# }
 

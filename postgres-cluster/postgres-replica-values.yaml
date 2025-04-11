@@ -18,14 +18,18 @@ primary:
     port: 5432
   postgresqlConfiguration:
     hot_standby: "on"
-    primary_conninfo: "host=pg-cluster-postgresql-ha-postgresql-EKS1.<region1>.svc.cluster.local user=repl_user password={{ .Values.postgresql.auth.replicationPasswordKey }}"
+    primary_conninfo: "host=eks1-postgresql.us-east-1.eks1.local user=repl_user password={{ .Values.postgresql.auth.replicationPasswordKey }}"
 
   replication:
     enabled: true
-    replicaCount: 2
+    replicaCount: 1
     synchronous: true
     replicationUser: repl_user
     replicationPassword: replicationpass
+    externalMaster:
+      host: "eks1-postgresql.us-east-1.eks1.local"
+      port: 5432
 readReplicas:
+  enabled: true
   replicaCount: 2
 
