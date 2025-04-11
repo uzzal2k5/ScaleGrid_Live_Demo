@@ -1,24 +1,20 @@
 postgresql:
   auth:
-    existingSecret: postgresql-secrets
+    existingSecret: postgres-secrets
     username: "postgres"
     passwordKey: "postgres-password"
     replicationUser: "repl_user"
     replicationPasswordKey: "replication-password"
 
-persistence:
-  enabled: true
-  size: 50Gi
-  storageClass: "scalegrid-ebs-sc"
+  persistence:
+    enabled: true
+    size: 50Gi
+    storageClass: "ebs-storage-class"
 
-primary:
-  service:
-    name: eks2-postgresql
-    type: ClusterIP
-    port: 5432
-  postgresqlConfiguration:
-    hot_standby: "on"
-    primary_conninfo: "host=eks1-postgresql.us-east-1.eks1.local user=repl_user password={{ .Values.postgresql.auth.replicationPasswordKey }}"
+  primary:
+    postgresqlConfiguration:
+      hot_standby: "on"
+      primary_conninfo: "host=pg-master.us-east-1.eks1.local user=repl_user password={{ .Values.postgresql.auth.replicationPasswordKey }}"
 
   replication:
     enabled: true
@@ -27,9 +23,23 @@ primary:
     replicationUser: repl_user
     replicationPassword: replicationpass
     externalMaster:
-      host: "eks1-postgresql.us-east-1.eks1.local"
+      host: "pg-master.us-east-1.eks1.local"
       port: 5432
+
+# Read replicas configuration
 readReplicas:
   enabled: true
   replicaCount: 2
+# pgpool configuration for connection pooling and load balancing
+pgpool:
+  enabled: true
+  service:
+    name: pg-replica   # Set your custom service name here
+    port: 5432
+    type: ClusterIP
+    # Other service settings
 
+# Configuring environment variables for other applications or services
+env:
+  DB_HOST: "pg-replica.us-east-2.eks2.local"
+  DB_PORT: "5432"

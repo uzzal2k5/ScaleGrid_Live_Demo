@@ -1,0 +1,6 @@
+namespace: kube-system
+
+rewrite:
+  namespace: "database"
+  pgService: "pg-cluster-1-postgresql-ha-pgpool"
+  customDomain: "pg-master.us-east-1.eks1.local"

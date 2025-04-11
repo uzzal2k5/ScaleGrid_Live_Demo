@@ -1,5 +1,6 @@
+# We can retrieve the postgresPassword and replicationPassword values from Vault or AWS Secrets Manager.
 secret:
   name: postgres-secrets
   namespace: database
-  postgresPassword: "postgresqlpass"
-  replicationPassword: "replicationpass"
+  postgresPassword: "pgpass"
+  replicationPassword: "replicpass"

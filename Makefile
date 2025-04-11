@@ -1,4 +1,4 @@
-.PHONY: all terraform-init terraform-apply kubeconfig validate-nodes helm-update storage-class secrets deploy clean
+.PHONY: all terraform-init terraform-apply kubeconfig validate-nodes helm-update storage-class secrets deploy deploy-coredns deploy-publication-job clean
 
 # Variables
 PROJECT=eks
@@ -11,7 +11,7 @@ NAMESPACE=database
 TF_LOG=DEBUG
 
 # Run all steps
-all: terraform-init terraform-apply kubeconfig validate-nodes helm-update storage-class secrets deploy
+all: terraform-init terraform-apply kubeconfig validate-nodes helm-update storage-class secrets deploy deploy-coredns deploy-publication-job
 
 # Initialize Terraform
 terraform-init:
@@ -75,23 +75,55 @@ postgres-secrets:
 deploy:
 	@echo "Switching to context $(EKS_CLUSTER_1) and installing PostgreSQL Master (pg-cluster-1)..."
 	kubectl config use-context $(EKS_CLUSTER_1)
-	helm install pg-cluster-1 bitnami/postgresql-ha -f ./postgres-cluster/postgres-master-values.yaml --namespace $(NAMESPACE) --create-namespace
+	helm install pg-master bitnami/postgresql-ha -f ./postgres-cluster/postgres-master-values.yaml --namespace $(NAMESPACE) --create-namespace
 
 	@echo "Switching to context $(EKS_CLUSTER_2) and installing PostgreSQL Replica (pg-cluster-2)..."
 	kubectl config use-context $(EKS_CLUSTER_2)
-	helm install pg-cluster-2 bitnami/postgresql-ha -f ./postgres-cluster/postgres-replica-values.yaml --namespace $(NAMESPACE) --create-namespace
+	helm install pg-replica bitnami/postgresql-ha -f ./postgres-cluster/postgres-replica-values.yaml --namespace $(NAMESPACE) --create-namespace
+
+# Deploy CoreDNS to both EKS clusters
+coredns:
+	@echo "Deploying CoreDNS to EKS Cluster 1..."
+	kubectl config use-context eks-cluster-1
+	helm install dns-rewrite ./coredns -f ./coredns/eks1-values.yaml --namespace database --create-namespace
+
+	@echo "Deploying CoreDNS to EKS Cluster 2..."
+	kubectl config use-context eks-cluster-2
+	helm install dns-rewrite ./coredns -f ./coredns/eks2-values.yaml --namespace database --create-namespace
+
+# Deploy PostgreSQL publication job to Cluster 1
+publication-job:
+	@echo "Deploying publication job to EKS Cluster 1..."
+	kubectl config use-context eks-cluster-1
+	helm install pg-publication ./publication-job --namespace database --create-namespace
 
 # Cleanup (Uninstall Helm releases)
 #The - prefix before each helm uninstall makes sure make continues even if a command fails (e.g., if the release doesn't exist).
-clean:
-	@echo "Switching to context $(EKS_CLUSTER_1) and uninstalling resources..."
+# Cleanup Kubernetes Resources
+clean-k8s:
+	@echo "Switching to context $(EKS_CLUSTER_1) and uninstalling Helm releases..."
 	kubectl config use-context $(EKS_CLUSTER_1)
-	-helm uninstall pg-cluster-1 --namespace $(NAMESPACE) || true
+	-helm uninstall pg-master --namespace $(NAMESPACE) || true
 	-helm uninstall postgres-secrets --namespace $(NAMESPACE) || true
 	-helm uninstall storage-class --namespace $(NAMESPACE) || true
+	-helm uninstall dns-rewrite --namespace $(NAMESPACE) || true
+	-helm uninstall pg-publication --namespace $(NAMESPACE) || true
 
-	@echo "Switching to context $(EKS_CLUSTER_2) and uninstalling resources..."
+	@echo "Switching to context $(EKS_CLUSTER_2) and uninstalling Helm releases..."
 	kubectl config use-context $(EKS_CLUSTER_2)
-	-helm uninstall pg-cluster-2 --namespace $(NAMESPACE) || true
+	-helm uninstall pg-replica --namespace $(NAMESPACE) || true
 	-helm uninstall postgres-secrets --namespace $(NAMESPACE) || true
 	-helm uninstall storage-class --namespace $(NAMESPACE) || true
+	-helm uninstall dns-rewrite --namespace $(NAMESPACE) || true
+
+# Cleanup Terraform State
+clean-terraform:
+	@echo "Destroying infrastructure using Terraform in $(TF_DIR)..."
+	terraform -chdir=$(TF_DIR) destroy -auto-approve 2> terraform-destroy.log|| true
+	@echo "Cleaning up Terraform cache and lock files..."
+	rm -rf $(TF_DIR)/.terraform
+	rm -f $(TF_DIR)/.terraform.lock.hcl
+	rm -f terraform-debug.log
+
+# Run both clean-ups
+clean: clean-k8s clean-terraform
