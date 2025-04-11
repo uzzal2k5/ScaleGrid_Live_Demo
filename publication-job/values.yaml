@@ -1,0 +1,9 @@
+secret:
+  name: postgres-secrets  # Name of the existing secret
+  key: postgresqlPassword   # Key holding the password
+
+postgres:
+  host: pg-master.database.svc.cluster.local
+  user: postgres
+  database: postgres
+  publication: pg_publication

@@ -1,3 +1,4 @@
+# Allow inbound access to PostgreSQL (default port 5432) from the EKS1 & EKS2 nodes
 # Security Group for EKS Cluster 1 in Region 1
 resource "aws_security_group" "eks_sg_1" {
   provider = aws.region1
