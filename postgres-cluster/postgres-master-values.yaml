@@ -24,4 +24,9 @@ primary:
     hot_standby: "on"
 
 readReplicas:
+  enabled: false
   replicaCount: 0  # Set to 0 on the primary
+# Configuring environment variables for other applications or services
+env:
+  DB_HOST: "eks1-postgresql.us-east-1.eks1.local"
+  DB_PORT: "5432"
