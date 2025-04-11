@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns
+  namespace: {{ .Values.namespace }}
+data:
+  Corefile: |
+    .:53 {
+        errors
+        health
+        rewrite name {{ printf "%s.%s.svc.cluster.local" .Values.rewrite.pgService .Values.rewrite.namespace }} {{ .Values.rewrite.customDomain }}
+        forward . /etc/resolv.conf
+        cache 30
+        loop
+        reload
+        loadbalance
+    }

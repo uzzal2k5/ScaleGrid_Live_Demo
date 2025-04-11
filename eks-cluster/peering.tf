@@ -5,22 +5,23 @@ resource "aws_vpc_peering_connection" "peer" {
   peer_region   = var.regions[1]  # Specify the correct region of the second VPC
   auto_accept   = false  # Must be false if different accounts
   tags = {
-    Name = "vpc-peering-${var.project}"
+    Name = "${var.project}-vpc-peering"
   }
   depends_on = [module.vpc_1]  # Ensure VPC is created before EKS
 }
 
-# Accept peering connection in the second region
-resource "aws_vpc_peering_connection_accepter" "peer_accept" {
+# Accepter side (in us-east-2)
+resource "aws_vpc_peering_connection_accepter" "peer_accepter" {
 provider                  = aws.region2  # Use correct provider
 vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
 auto_accept               = true
 tags = {
-Name = "vpc-peering-accept-${var.project}"
+Name = "${var.project}-vpc-peer-accepter"
 }
   depends_on = [module.vpc_2]  # Ensure VPC is created before EKS
 }
 
+# Enable DNS Resolution on the Requester side (us-east-1)
 resource "aws_vpc_peering_connection_options" "requester" {
   provider                  = aws.region1
   vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
@@ -29,6 +30,7 @@ resource "aws_vpc_peering_connection_options" "requester" {
   }
 }
 
+# Enable DNS Resolution on the Accepter side (us-east-2)
 resource "aws_vpc_peering_connection_options" "accepter" {
   provider                  = aws.region2
   vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
@@ -41,7 +43,6 @@ resource "aws_vpc_peering_connection_options" "accepter" {
 # Route table for VPC1
 resource "aws_route" "route_vpc1_to_vpc2" {
   provider               = aws.region1
-  # route_table_id         = var.vpc1_route_table_id
   route_table_id = module.vpc_1.private_route_table_ids[0]
   destination_cidr_block = var.vpc_cidr_blocks["vpc_2"]
   vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
@@ -54,7 +55,6 @@ resource "aws_route" "route_vpc1_to_vpc2" {
 # Route table for VPC2
 resource "aws_route" "route_vpc2_to_vpc1" {
   provider               = aws.region2
-  # route_table_id         = var.vpc2_route_table_id
   route_table_id = module.vpc_2.private_route_table_ids[0]
   destination_cidr_block = var.vpc_cidr_blocks["vpc_1"]
   vpc_peering_connection_id = aws_vpc_peering_connection.peer.id

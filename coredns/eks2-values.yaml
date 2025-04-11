@@ -1,0 +1,6 @@
+namespace: kube-system
+
+rewrite:
+  namespace: database
+  pgService: ""
+  customDomain: pg-replica.us-east-2.eks2.local
