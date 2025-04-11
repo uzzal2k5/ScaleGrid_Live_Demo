@@ -8,3 +8,5 @@ eks-cluster/.terraform.lock.hcl
 */terraform.tfstate.backup
 */crash.log
 */*.tfstate*
+terraform-debug.log
+patroni-postgres/
