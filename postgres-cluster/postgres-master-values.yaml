@@ -1,32 +1,38 @@
 postgresql:
   auth:
-    existingSecret: postgresql-secrets
+    existingSecret: postgres-secrets
     username: "postgres"
     passwordKey: "postgres-password"
     replicationUser: "repl_user"
     replicationPasswordKey: "replication-password"
 
-persistence:
-  enabled: true
-  size: 10Gi
-  storageClass: "scalegrid-ebs-sc"
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: "ebs-storage-class"
 
-primary:
-  service:
-    name: eks1-postgresql
-    type: ClusterIP
-    port: 5432
-  postgresqlConfiguration:
-    wal_level: "replica"
-    archive_mode: "on"
-    archive_command: "cp %p /bitnami/postgresql/wal_archive/%f"
-    max_wal_senders: "10"
-    hot_standby: "on"
+  primary:
+    postgresqlConfiguration:
+      wal_level: "replica"
+      archive_mode: "on"
+      archive_command: "cp %p /bitnami/postgresql/wal_archive/%f"
+      max_wal_senders: "10"
+      hot_standby: "on"
 
+# Read replicas configuration (disabled in this case as only the master is active)
 readReplicas:
   enabled: false
   replicaCount: 0  # Set to 0 on the primary
+
+pgpool:
+  enabled: true
+  service:
+    name: pg-master   # Set your custom service name here
+    port: 5432
+    type: ClusterIP
+    # Other service settings
+
 # Configuring environment variables for other applications or services
 env:
-  DB_HOST: "eks1-postgresql.us-east-1.eks1.local"
+  DB_HOST: "pg-master.us-east-1.eks1.local"
   DB_PORT: "5432"

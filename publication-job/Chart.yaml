@@ -1,0 +1,6 @@
+apiVersion: v2
+name: create-publication-job
+description: A Helm chart to create a PostgreSQL publication using a post-install job
+type: application
+version: 0.1.0
+appVersion: "15"  # PostgreSQL version (optional)

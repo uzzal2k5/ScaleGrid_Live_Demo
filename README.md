@@ -10,7 +10,7 @@ Deploy a single  Postgresql cluster with nodes running in the 2 Kubernetes clust
     - Demonstrate the cluster's high availability with cluster level fault tolerance.
 All to be done live.
 
-![PostgreSQL HA Architecture](diagrams/postgres-ha-architecture-diagram.png)
+![PostgreSQL HA Architecture](diagram/postgres-ha-architecture-diagram.png)
 
 ## Makefile for Terraform, AWS EKS, and Helm Deployment
 This Makefile will automate the following tasks:

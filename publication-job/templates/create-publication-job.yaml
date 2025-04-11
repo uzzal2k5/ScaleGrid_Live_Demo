@@ -17,12 +17,15 @@ spec:
             - "sh"
             - "-c"
             - |
-              psql -h eks1-postgres -U postgres -d postgres -c 'CREATE PUBLICATION my_publication FOR ALL TABLES;';
+              psql -h {{ .Values.postgres.host }} \
+                   -U {{ .Values.postgres.user }} \
+                   -d {{ .Values.postgres.database }} \
+                   -c 'CREATE PUBLICATION {{ .Values.postgres.publication }} FOR ALL TABLES;'
           env:
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secret.name }}
-                  key: postgresqlPassword
+                  key: {{ .Values.secret.key }}
       restartPolicy: Never
   backoffLimit: 4

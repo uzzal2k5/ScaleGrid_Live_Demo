@@ -1,5 +1,5 @@
 storageClass:
-  name: scalegrid-ebs-sc
+  name: ebs-storage-class
   type: gp3
   fsType: ext4
   encrypted: "true"
